@@ -113,7 +113,7 @@ This tool takes a single config file, in JSON format, with the following structu
 				}
 			]
 		}
-	}
+	]
 }
 ```
 
