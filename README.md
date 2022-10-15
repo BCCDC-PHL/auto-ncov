@@ -24,96 +24,96 @@ This tool takes a single config file, in JSON format, with the following structu
 ```json
 {
     "fastq_by_run_dir": "/path/to/fastq_symlinks_by_run",
-	"analysis_output_dir": "/path/to/analysis_by_run",
-	"analysis_work_dir": "/path/to/auto-ncov-work",
-	"notification_email_addresses": [
-		"someone@example.org",
-		"someone_else@example.org"
-	],
-	"send_notification_emails": true,
-	"scan_interval_seconds": 3600,
-	"pipelines": [
-		{
-			"pipeline_name": "BCCDC-PHL/ncov2019-artic-nf",
-			"pipeline_version": "1.3.3",
-			"pipeline_parameters": [
-				{
-					"flag": "--illumina"
-				},
-				{
-					"flag": "--prefix",
-					"value": null
-				},
-				{
-					"flag": "--ref",
-					"value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/nCoV-2019.reference.fasta"
-				},
-				{
-					"flag": "--gff",
-					"value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/MN908947.3.gff"
-				},
-				{
-					"flag": "--bed",
-					"value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/nCoV-2019.primer.bed"
-				},
-				{
-					"flag": "--primer_pairs_tsv",
-					"value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/primer_pairs.tsv"
-				},
-				{
-					"flag": "--composite_ref",
-					"value": "/path/to/composite_GRCh38_SARS-CoV-2.fna"
-				},
-				{
-					"flag": "--directory",
-					"value": null
-				},
-				{
-					"flag": "--outdir",
-					"value": null
-				}
-			],
-		{
-			"pipeline_name": "BCCDC-PHL/ncov-tools-nf",
-			"pipeline_version": "v1.5.8",
-			"dependencies": [
-				{
-					"pipeline_name": "BCCDC-PHL/ncov2019-artic-nf",
-					"pipeline_version": "v1.3.3"
-				}
-			],
-			"pipeline_parameters": [
-				{
-					"flag": "--artic_analysis_dir",
-					"value": null
-				},
-				{
-					"flag": "--metadata",
-					"value": null
-				},
-				{
-					"flag": "--run_name",
-					"value": null
-				},
-				{
-					"flag": "--downsampled"
-				},
-				{
-					"flag": "--split_by_plate"
-				},
-				{
-					"flag": "--freebayes_consensus"
-				},
-				{
-					"flag": "--freebayes_variants"
-				},
-				{
-					"flag": "--outdir",
-					"value": null
-				}
-			]
-		}
-	]
+    "analysis_output_dir": "/path/to/analysis_by_run",
+    "analysis_work_dir": "/path/to/auto-ncov-work",
+    "notification_email_addresses": [
+        "someone@example.org",
+        "someone_else@example.org"
+    ],
+    "send_notification_emails": true,
+    "scan_interval_seconds": 3600,
+    "pipelines": [
+        {
+            "pipeline_name": "BCCDC-PHL/ncov2019-artic-nf",
+            "pipeline_version": "1.3.3",
+            "pipeline_parameters": [
+                {
+                    "flag": "--illumina"
+                },
+                {
+                    "flag": "--prefix",
+                    "value": null
+                },
+                {
+                    "flag": "--ref",
+                    "value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/nCoV-2019.reference.fasta"
+                },
+                {
+                    "flag": "--gff",
+                    "value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/MN908947.3.gff"
+                },
+                {
+                    "flag": "--bed",
+                    "value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/nCoV-2019.primer.bed"
+                },
+                {
+                    "flag": "--primer_pairs_tsv",
+                    "value": "/path/to/artic-ncov2019/primer_schemes/nCoV-2019/V1200/primer_pairs.tsv"
+                },
+                {
+                    "flag": "--composite_ref",
+                    "value": "/path/to/composite_GRCh38_SARS-CoV-2.fna"
+                },
+                {
+                    "flag": "--directory",
+                    "value": null
+                },
+                {
+                    "flag": "--outdir",
+                    "value": null
+                }
+            ],
+        {
+            "pipeline_name": "BCCDC-PHL/ncov-tools-nf",
+            "pipeline_version": "v1.5.8",
+            "dependencies": [
+                {
+                    "pipeline_name": "BCCDC-PHL/ncov2019-artic-nf",
+                    "pipeline_version": "v1.3.3"
+                }
+            ],
+            "pipeline_parameters": [
+                {
+                    "flag": "--artic_analysis_dir",
+                    "value": null
+                },
+                {
+                    "flag": "--metadata",
+                    "value": null
+                },
+                {
+                    "flag": "--run_name",
+                    "value": null
+                },
+                {
+                    "flag": "--downsampled"
+                },
+                {
+                    "flag": "--split_by_plate"
+                },
+                {
+                    "flag": "--freebayes_consensus"
+                },
+                {
+                    "flag": "--freebayes_variants"
+                },
+                {
+                    "flag": "--outdir",
+                    "value": null
+                }
+            ]
+        }
+    ]
 }
 ```
 
