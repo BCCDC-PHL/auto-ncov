@@ -14,7 +14,7 @@ from typing import Iterator, Optional
 def find_fastq_dirs(config, check_symlinks_complete=True):
     miseq_run_id_regex = "\d{6}_M\d{5}_\d+_\d{9}-[A-Z0-9]{5}"
     nextseq_run_id_regex = "\d{6}_VH\d{5}_\d+_[A-Z0-9]{9}"
-    gridion_run_id_regex = "\d{8}_\d{4}_X[1-5]_[A-Z0-9]+_[a-z0-9]{8}"
+
     fastq_by_run_dir = config['fastq_by_run_dir']
     subdirs = os.scandir(fastq_by_run_dir)
     if 'analyze_runs_in_reverse_order' in config and config['analyze_runs_in_reverse_order']:
@@ -25,7 +25,6 @@ def find_fastq_dirs(config, check_symlinks_complete=True):
 
         matches_miseq_regex = re.match(miseq_run_id_regex, run_id)
         matches_nextseq_regex = re.match(nextseq_run_id_regex, run_id)
-        matches_gridion_regex = re.match(gridion_run_id_regex, run_id)
 
         if check_symlinks_complete:
             ready_to_analyze = os.path.exists(os.path.join(subdir.path, "symlinks_complete.json"))
@@ -40,13 +39,12 @@ def find_fastq_dirs(config, check_symlinks_complete=True):
         
         analysis_parameters = {}
         if all(conditions_met):
-
             logging.info(json.dumps({"event_type": "fastq_directory_found", "sequencing_run_id": run_id, "fastq_directory_path": os.path.abspath(subdir.path)}))
-            analysis_parameters['fastq_input'] = run_fastq_directory
+            analysis_parameters['directory'] = run_fastq_directory
+            analysis_parameters['prefix'] = os.path.basename(run_fastq_directory)
             run = {
                 "run_id": run_id,
                 "fastq_directory": run_fastq_directory,
-                "instrument_type": "illumina",
                 "analysis_parameters": analysis_parameters
             }
             yield run
@@ -67,8 +65,8 @@ def scan(config: dict[str, object]) -> Iterator[Optional[dict[str, object]]]:
     :rtype: Iterator[Optional[dict[str, object]]]
     """
     logging.info(json.dumps({"event_type": "scan_start"}))
-    for symlinks_dir in find_fastq_dirs(config):    
-        yield symlinks_dir
+    for fastq_dir in find_fastq_dirs(config):    
+        yield fastq_dir
 
 
 def check_analysis_dependencies_complete(pipeline: dict[str, object], analysis: dict[str, object], analysis_run_output_dir: str):
@@ -133,32 +131,57 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
     """
     base_analysis_outdir = config['analysis_output_dir']
     base_analysis_work_dir = config['analysis_work_dir']
-    no_value_flags_by_pipeline_name = {
-        "BCCDC-PHL/ncov2019-artic-nf": [],
-        "BCCDC-PHL/ncov-tools-nf": [],
-    }
+    run_id = run['run_id']
     if 'notification_email_addresses' in config:
         notification_email_addresses = config['notification_email_addresses']
     else:
         notification_email_addresses = []
-    for pipeline in config['pipelines']:
-        fastq_directory = None
 
+    for pipeline in config['pipelines']:
         pipeline_parameters = pipeline['pipeline_parameters']
         pipeline_short_name = pipeline['pipeline_name'].split('/')[1]
         pipeline_minor_version = ''.join(pipeline['pipeline_version'].rsplit('.', 1)[0])
 
-        # TODO: Pipeline-specific logic
-        if pipeline['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
-            pass
-        elif pipeline['pipeline_name'] == 'BCCDC-PHL/ncov-tools-nf':
-            pass
-        else:
-            pass
-
         analysis_output_dir_name = '-'.join([pipeline_short_name, pipeline_minor_version, 'output'])
-        analysis_pipeline_output_dir = os.path.abspath(os.path.join(analysis_run_output_dir, analysis_output_dir_name))
-        pipeline_parameters['outdir'] = analysis_pipeline_output_dir
+        analysis_run_output_dir = os.path.join(str(config['analysis_output_dir']), str(run_id))
+        # Pipeline-specific logic
+        if pipeline['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
+            analysis_pipeline_output_dir = os.path.abspath(os.path.join(analysis_run_output_dir, analysis_output_dir_name))
+            fastq_dir = run['fastq_directory']
+            run_id = run['run_id']
+            for pipeline_parameter in pipeline_parameters:
+                if pipeline_parameter["flag"] == "--directory":
+                    pipeline_parameter["value"] = fastq_dir
+                elif pipeline_parameter["flag"] == "--prefix":
+                    pipeline_parameter["value"] = run_id
+        elif pipeline['pipeline_name'] == 'BCCDC-PHL/ncov-tools-nf':
+            artic_minor_version = ""
+            for dependency in pipeline['dependencies']:
+                if dependency['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
+                    artic_version = dependency['pipeline_version']
+                    artic_minor_version = '.'.join(artic_version.lstrip('v').split('.')[0:1])
+            ncov2019_artic_nf_output_dir = "ncov2019-artic-nf-v" + artic_minor_version + "-output"
+            analysis_pipeline_output_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir, analysis_output_dir_name))
+            analysis_pipeline_input_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir))
+            analysis_run_metadata_path = os.path.join(analysis_run_output_dir, 'metadata.tsv')
+
+            for parameter in pipeline_parameters:
+                if parameter['flag'] == '--artic_analysis_dir':
+                    parameter['value'] = analysis_pipeline_input_dir
+                elif parameter['flag'] == '--metadata':
+                    if os.path.exists(analysis_run_metadata_path):
+                        parameter['value'] = analysis_run_metadata_path
+                    else:
+                        pipeline_parameters.remove(parameter)
+                elif parameter['flag'] == '--run_name':
+                    parameter['value'] = run_id
+        else:
+            # We only want to run the two pipelines listed above. Skip anything else.
+            continue
+        
+        for pipeline_parameter in pipeline_parameters:
+            if pipeline_parameter["flag"] == "--outdir":
+                pipeline_parameter["value"] = analysis_pipeline_output_dir
 
         analysis_dependencies_complete = check_analysis_dependencies_complete(pipeline, run['analysis_parameters'], analysis_run_output_dir)
         analysis_not_already_started = not os.path.exists(analysis_pipeline_output_dir)
@@ -174,16 +197,16 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
                 "pipeline_name": pipeline['pipeline_name'],
                 "pipeline_version": pipeline['pipeline_version'],
                 "pipeline_dependencies": pipeline['dependencies'],
-                "sequencing_run_id": analysis_run_id,
+                "sequencing_run_id": run_id,
                 "conditions_checked": conditions_checked,
             }))
 
         analysis_timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        analysis_work_dir = os.path.abspath(os.path.join(base_analysis_work_dir, 'work-' + analysis_run_id + '_' + pipeline_short_name + '_' + analysis_timestamp))
-        analysis_report_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, analysis_run_id + '_' + pipeline_short_name + '_report.html'))
-        analysis_trace_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, analysis_run_id + '_' + pipeline_short_name + '_trace.tsv'))
-        analysis_timeline_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, analysis_run_id + '_' + pipeline_short_name + '_timeline.html'))
-        analysis_log_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, analysis_run_id + '_' + pipeline_short_name + '_nextflow.log'))
+        analysis_work_dir = os.path.abspath(os.path.join(base_analysis_work_dir, 'work-' + run_id + '_' + pipeline_short_name + '_' + analysis_timestamp))
+        analysis_report_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, run_id + '_' + pipeline_short_name + '_report.html'))
+        analysis_trace_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, run_id + '_' + pipeline_short_name + '_trace.tsv'))
+        analysis_timeline_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, run_id + '_' + pipeline_short_name + '_timeline.html'))
+        analysis_log_path = os.path.abspath(os.path.join(analysis_pipeline_output_dir, run_id + '_' + pipeline_short_name + '_nextflow.log'))
         pipeline_command = [
             'nextflow',
             '-log', analysis_log_path,
@@ -199,27 +222,33 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
         ]
         if 'send_notification_emails' in config and config['send_notification_emails']:
             pipeline_command += ['-with-notification', ','.join(notification_email_addresses)]
-        for flag, config_value in pipeline_parameters.items():
-            if config_value is None and flag not in no_value_flags_by_pipeline_name[pipeline['pipeline_name']]:
-                value = run['analysis_parameters'][flag]
-                pipeline_command += ['--' + flag, value]
-            elif config_value is None and flag in no_value_flags_by_pipeline_name[pipeline['pipeline_name']]:
-                pipeline_command += ['--' + flag]
+        for pipeline_parameter in pipeline_parameters:
+            if "flag" in pipeline_parameter and "value" in pipeline_parameter:
+                flag = pipeline_parameter["flag"]
+                value = pipeline_parameter["value"]
+                pipeline_command += [flag, value]
+            elif "flag" in pipeline_parameter:
+                flag = pipeline_parameter["flag"]
+                pipeline_command += [flag]
+            elif "value" in pipeline_parameter:
+                value = pipeline_parameter["value"]
+                pipeline_command += [value]
             else:
-                value = config_value
-                pipeline_command += ['--' + flag, value]
+                # We should at least have a "flag" or a "value" for the parameter.
+                # If we don't, ignore the parameter.
+                continue
 
-        logging.info(json.dumps({"event_type": "analysis_started", "sequencing_run_id": analysis_run_id, "pipeline_command": " ".join(pipeline_command)}))
+        logging.info(json.dumps({"event_type": "analysis_started", "sequencing_run_id": run_id, "pipeline_command": " ".join(pipeline_command)}))
         analysis_complete = {"timestamp_analysis_start": datetime.datetime.now().isoformat()}
         try:
             analysis_result = subprocess.run(pipeline_command, capture_output=True, check=True)
             analysis_complete['timestamp_analysis_complete'] = datetime.datetime.now().isoformat()
             with open(os.path.join(analysis_pipeline_output_dir, 'analysis_complete.json'), 'w') as f:
                 json.dump(analysis_complete, f, indent=2)
-            logging.info(json.dumps({"event_type": "analysis_completed", "sequencing_run_id": analysis_run_id, "pipeline_command": " ".join(pipeline_command)}))
+            logging.info(json.dumps({"event_type": "analysis_completed", "sequencing_run_id": run_id, "pipeline_command": " ".join(pipeline_command)}))
             shutil.rmtree(analysis_work_dir, ignore_errors=True)
-            logging.info(json.dumps({"event_type": "analysis_work_dir_deleted", "sequencing_run_id": analysis_run_id, "analysis_work_dir_path": analysis_work_dir}))
+            logging.info(json.dumps({"event_type": "analysis_work_dir_deleted", "sequencing_run_id": run_id, "analysis_work_dir_path": analysis_work_dir}))
         except subprocess.CalledProcessError as e:
-            logging.error(json.dumps({"event_type": "analysis_failed", "sequencing_run_id": analysis_run_id, "pipeline_command": " ".join(pipeline_command)}))
+            logging.error(json.dumps({"event_type": "analysis_failed", "sequencing_run_id": run_id, "pipeline_command": " ".join(pipeline_command)}))
         except OSError as e:
-            logging.error(json.dumps({"event_type": "delete_analysis_work_dir_failed", "sequencing_run_id": analysis_run_id, "analysis_work_dir_path": analysis_work_dir}))
+            logging.error(json.dumps({"event_type": "delete_analysis_work_dir_failed", "sequencing_run_id": run_id, "analysis_work_dir_path": analysis_work_dir}))

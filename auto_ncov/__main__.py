@@ -9,7 +9,6 @@ import time
 
 import auto_ncov.config
 import auto_ncov.core as core
-import auto_ncov.fastq as fastq
 
 DEFAULT_SCAN_INTERVAL_SECONDS = 3600.0
 
