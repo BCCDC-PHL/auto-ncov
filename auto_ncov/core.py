@@ -165,23 +165,31 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
             analysis_pipeline_input_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir))
             analysis_run_metadata_path = os.path.join(analysis_run_output_dir, 'metadata.tsv')
 
+            # The way we remove the metadata parameter is clumsy, but
+            # we need to avoid mutating the list of parameters while
+            # iterating over it.
+            should_remove_metadata_parameter = False
             for parameter in pipeline_parameters:
                 if parameter['flag'] == '--artic_analysis_dir':
                     parameter['value'] = analysis_pipeline_input_dir
+                elif parameter['flag'] == '--run_name':
+                    parameter['value'] = run_id
                 elif parameter['flag'] == '--metadata':
                     if os.path.exists(analysis_run_metadata_path):
                         parameter['value'] = analysis_run_metadata_path
                     else:
+                        should_remove_metadata_parameter = True
+            if should_remove_metadata_parameter:
+                for parameter in pipeline_parameters:
+                    if parameter['flag'] == '--metadata':
                         pipeline_parameters.remove(parameter)
-                elif parameter['flag'] == '--run_name':
-                    parameter['value'] = run_id
         else:
             # We only want to run the two pipelines listed above. Skip anything else.
             continue
-        
-        for pipeline_parameter in pipeline_parameters:
-            if pipeline_parameter["flag"] == "--outdir":
-                pipeline_parameter["value"] = analysis_pipeline_output_dir
+
+        for parameter in pipeline_parameters:
+            if parameter["flag"] == "--outdir":
+                parameter["value"] = analysis_pipeline_output_dir
 
         analysis_dependencies_complete = check_analysis_dependencies_complete(pipeline, run['analysis_parameters'], analysis_run_output_dir)
         analysis_not_already_started = not os.path.exists(analysis_pipeline_output_dir)
@@ -200,6 +208,7 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
                 "sequencing_run_id": run_id,
                 "conditions_checked": conditions_checked,
             }))
+            continue
 
         analysis_timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         analysis_work_dir = os.path.abspath(os.path.join(base_analysis_work_dir, 'work-' + run_id + '_' + pipeline_short_name + '_' + analysis_timestamp))
