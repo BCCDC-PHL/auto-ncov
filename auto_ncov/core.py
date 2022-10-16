@@ -159,30 +159,27 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
             for dependency in pipeline['dependencies']:
                 if dependency['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
                     artic_version = dependency['pipeline_version']
-                    artic_minor_version = '.'.join(artic_version.lstrip('v').split('.')[0:1])
+                    artic_minor_version = '.'.join(artic_version.lstrip('v').split('.')[0:2])
             ncov2019_artic_nf_output_dir = "ncov2019-artic-nf-v" + artic_minor_version + "-output"
             analysis_pipeline_output_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir, analysis_output_dir_name))
             analysis_pipeline_input_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir))
             analysis_run_metadata_path = os.path.join(analysis_run_output_dir, 'metadata.tsv')
 
-            # The way we remove the metadata parameter is clumsy, but
-            # we need to avoid mutating the list of parameters while
-            # iterating over it.
-            should_remove_metadata_parameter = False
+            # Need to do a separate pass over parameters specifically to
+            # remove the metadata flag, to avoid mutating the list of
+            # parameters while iterating over it.
+            if not os.path.exists(analysis_run_metadata_path):
+                for parameter in pipeline_parameters:
+                    if parameter['flag'] == '--metadata':
+                        pipeline_parameters.remove(parameter)
+
             for parameter in pipeline_parameters:
                 if parameter['flag'] == '--artic_analysis_dir':
                     parameter['value'] = analysis_pipeline_input_dir
                 elif parameter['flag'] == '--run_name':
                     parameter['value'] = run_id
                 elif parameter['flag'] == '--metadata':
-                    if os.path.exists(analysis_run_metadata_path):
-                        parameter['value'] = analysis_run_metadata_path
-                    else:
-                        should_remove_metadata_parameter = True
-            if should_remove_metadata_parameter:
-                for parameter in pipeline_parameters:
-                    if parameter['flag'] == '--metadata':
-                        pipeline_parameters.remove(parameter)
+                    parameter['value'] = analysis_run_metadata_path
         else:
             # We only want to run the two pipelines listed above. Skip anything else.
             continue
