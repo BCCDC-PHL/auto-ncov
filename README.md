@@ -73,6 +73,7 @@ This tool takes a single config file, in JSON format, with the following structu
                     "value": null
                 }
             ],
+        },
         {
             "pipeline_name": "BCCDC-PHL/ncov-tools-nf",
             "pipeline_version": "v1.5.8",
