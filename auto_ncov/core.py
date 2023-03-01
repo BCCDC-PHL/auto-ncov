@@ -30,11 +30,16 @@ def find_fastq_dirs(config, check_symlinks_complete=True):
             ready_to_analyze = os.path.exists(os.path.join(subdir.path, "symlinks_complete.json"))
         else:
             ready_to_analyze = True
+
+        not_excluded = run_id not in config['excluded_runs']
+
         conditions_checked = {
             "is_directory": subdir.is_dir(),
             "matches_illumina_run_id_format": ((matches_miseq_regex is not None) or (matches_nextseq_regex is not None)),
             "ready_to_analyze": ready_to_analyze,
+            "not_excluded": not_excluded,
         }
+
         conditions_met = list(conditions_checked.values())
         
         analysis_parameters = {}
@@ -55,9 +60,7 @@ def find_fastq_dirs(config, check_symlinks_complete=True):
 
 def scan(config: dict[str, object]) -> Iterator[Optional[dict[str, object]]]:
     """
-    Scanning involves looking for all existing runs and storing them to the database,
-    then looking for all existing symlinks and storing them to the database.
-    At the end of a scan, we should be able to determine which (if any) symlinks need to be created.
+    Scanning involves looking for all existing runs, and passing them along to be analyzed.
 
     :param config: Application config.
     :type config: dict[str, object]
