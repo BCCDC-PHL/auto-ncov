@@ -3,6 +3,14 @@ Automated analysis of SARS-CoV-2 sequence data.
 
 # Installation
 
+```
+git clone https://github.com/BCCDC-PHL/auto-ncov.git
+cd auto-ncov
+conda create -n auto-ncov python=3
+conda activate auto-ncov
+pip install .
+```
+
 # Usage
 Start the tool as follows:
 
@@ -108,6 +116,38 @@ This tool takes a single config file, in JSON format, with the following structu
                 },
                 {
                     "flag": "--freebayes_variants"
+                },
+                {
+                    "flag": "--outdir",
+                    "value": null
+                }
+            ]
+        },
+		{
+            "pipeline_name": "BCCDC-PHL/ncov-recombinant-nf",
+            "pipeline_version": "v0.1.5",
+            "dependencies": [
+                {
+                    "pipeline_name": "BCCDC-PHL/ncov2019-artic-nf",
+                    "pipeline_version": "v1.3.3"
+                }
+            ],
+            "pipeline_parameters": [
+                {
+                    "flag": "--ncov_recombinant_version",
+                    "value": "0.7.0"
+                },
+                {
+                    "flag": "--artic_analysis_dir",
+                    "value": null
+                },
+                {
+                    "flag": "--metadata",
+                    "value": null
+                },
+                {
+                    "flag": "--run_name",
+                    "value": null
                 },
                 {
                     "flag": "--outdir",

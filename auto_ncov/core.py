@@ -189,8 +189,11 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
 
         elif pipeline['pipeline_name'] == 'BCCDC-PHL/ncov-recombinant-nf':
             # 2023-03-02 dfornika <dan.fornika@bccdc.ca>
-            # Note: This code branch is almost identical to the 'BCCDC-PHL/ncov-tools-nf' branch above.
+            # Note: This code branch is identical to the 'BCCDC-PHL/ncov-tools-nf' branch above.
             #       We've duplicated it here to allow for any custom logic we may need later.
+
+            # We don't include the '-nf' in the ncov-tools output dir
+            analysis_output_dir_name = '-'.join([pipeline_short_name.removesuffix('-nf'), pipeline_minor_version, 'output'])
             artic_minor_version = ""
             for dependency in pipeline['dependencies']:
                 if dependency['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
