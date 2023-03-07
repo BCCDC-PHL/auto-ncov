@@ -157,7 +157,10 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
                     pipeline_parameter["value"] = fastq_dir
                 elif pipeline_parameter["flag"] == "--prefix":
                     pipeline_parameter["value"] = run_id
+
         elif pipeline['pipeline_name'] == 'BCCDC-PHL/ncov-tools-nf':
+            # We don't include the '-nf' in the ncov-tools output dir
+            analysis_output_dir_name = '-'.join([pipeline_short_name.removesuffix('-nf'), pipeline_minor_version, 'output'])
             artic_minor_version = ""
             for dependency in pipeline['dependencies']:
                 if dependency['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
@@ -183,8 +186,39 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
                     parameter['value'] = run_id
                 elif parameter['flag'] == '--metadata':
                     parameter['value'] = analysis_run_metadata_path
+
+        elif pipeline['pipeline_name'] == 'BCCDC-PHL/ncov-recombinant-nf':
+            # 2023-03-02 dfornika <dan.fornika@bccdc.ca>
+            # Note: This code branch is almost identical to the 'BCCDC-PHL/ncov-tools-nf' branch above.
+            #       We've duplicated it here to allow for any custom logic we may need later.
+            artic_minor_version = ""
+            for dependency in pipeline['dependencies']:
+                if dependency['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
+                    artic_version = dependency['pipeline_version']
+                    artic_minor_version = '.'.join(artic_version.lstrip('v').split('.')[0:2])
+            ncov2019_artic_nf_output_dir = "ncov2019-artic-nf-v" + artic_minor_version + "-output"
+            analysis_pipeline_output_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir, analysis_output_dir_name))
+            analysis_pipeline_input_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir))
+            analysis_run_metadata_path = os.path.join(analysis_run_output_dir, 'metadata.tsv')
+
+            # Need to do a separate pass over parameters specifically to
+            # remove the metadata flag, to avoid mutating the list of
+            # parameters while iterating over it.
+            if not os.path.exists(analysis_run_metadata_path):
+                for parameter in pipeline_parameters:
+                    if parameter['flag'] == '--metadata':
+                        pipeline_parameters.remove(parameter)
+
+            for parameter in pipeline_parameters:
+                if parameter['flag'] == '--artic_analysis_dir':
+                    parameter['value'] = analysis_pipeline_input_dir
+                elif parameter['flag'] == '--run_name':
+                    parameter['value'] = run_id
+                elif parameter['flag'] == '--metadata':
+                    parameter['value'] = analysis_run_metadata_path
+
         else:
-            # We only want to run the two pipelines listed above. Skip anything else.
+            # We only want to run the three pipelines listed above. Skip anything else.
             continue
 
         for parameter in pipeline_parameters:
