@@ -123,7 +123,7 @@ This tool takes a single config file, in JSON format, with the following structu
                 }
             ]
         },
-		{
+        {
             "pipeline_name": "BCCDC-PHL/ncov-recombinant-nf",
             "pipeline_version": "v0.1.5",
             "dependencies": [
