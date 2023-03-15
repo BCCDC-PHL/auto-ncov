@@ -81,7 +81,7 @@ This tool takes a single config file, in JSON format, with the following structu
                     "flag": "--outdir",
                     "value": null
                 }
-            ],
+            ]
         },
         {
             "pipeline_name": "BCCDC-PHL/ncov-tools-nf",
@@ -153,6 +153,26 @@ This tool takes a single config file, in JSON format, with the following structu
                     "flag": "--outdir",
                     "value": null
                 }
+            ]
+        },
+		{
+		    "pipeline_name": "BCCDC-PHL/pangolin-nf",
+            "pipeline_version": "v0.2.0",
+            "dependencies": [
+                {
+                    "pipeline_name": "BCCDC-PHL/ncov2019-artic-nf",
+                    "pipeline_version": "v1.3.3"
+                }
+            ],
+            "pipeline_parameters": [
+                {
+                    "flag": "--analysis_parent_dir",
+                    "value": "/path/to/analysis_by_run"
+                },
+                {
+		            "flag": "--outdir",
+		            "value": null
+		        }
             ]
         }
     ]
