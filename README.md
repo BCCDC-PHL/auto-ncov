@@ -155,8 +155,8 @@ This tool takes a single config file, in JSON format, with the following structu
                 }
             ]
         },
-		{
-		    "pipeline_name": "BCCDC-PHL/pangolin-nf",
+        {
+            "pipeline_name": "BCCDC-PHL/pangolin-nf",
             "pipeline_version": "v0.2.0",
             "dependencies": [
                 {
@@ -170,9 +170,9 @@ This tool takes a single config file, in JSON format, with the following structu
                     "value": "/path/to/analysis_by_run"
                 },
                 {
-		            "flag": "--outdir",
-		            "value": null
-		        }
+                    "flag": "--outdir",
+                    "value": null
+                }
             ]
         }
     ]
