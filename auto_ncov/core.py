@@ -192,7 +192,7 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
             # Note: This code branch is identical to the 'BCCDC-PHL/ncov-tools-nf' branch above.
             #       We've duplicated it here to allow for any custom logic we may need later.
 
-            # We don't include the '-nf' in the ncov-tools output dir
+            # We don't include the '-nf' in the ncov-recombinant output dir
             analysis_output_dir_name = '-'.join([pipeline_short_name.removesuffix('-nf'), pipeline_minor_version, 'output'])
             artic_minor_version = ""
             for dependency in pipeline['dependencies']:
@@ -219,6 +219,14 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
                     parameter['value'] = run_id
                 elif parameter['flag'] == '--metadata':
                     parameter['value'] = analysis_run_metadata_path
+
+        elif pipeline['pipeline_name'] == 'BCCDC-PHL/pangolin-nf':
+            for dependency in pipeline['dependencies']:
+                if dependency['pipeline_name'] == 'BCCDC-PHL/ncov2019-artic-nf':
+                    artic_version = dependency['pipeline_version']
+                    artic_minor_version = '.'.join(artic_version.lstrip('v').split('.')[0:2])
+            ncov2019_artic_nf_output_dir = "ncov2019-artic-nf-v" + artic_minor_version + "-output"
+            analysis_pipeline_output_dir = os.path.abspath(os.path.join(analysis_run_output_dir, ncov2019_artic_nf_output_dir, analysis_output_dir_name))
 
         else:
             # We only want to run the three pipelines listed above. Skip anything else.
