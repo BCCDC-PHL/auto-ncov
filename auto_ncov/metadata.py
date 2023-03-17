@@ -79,13 +79,17 @@ def combine_ct_values(metadata):
 def get_run_library_ids(config, run_id):
     """
     """
-    sample_library_ids = []
+    sample_library_ids = set()
     run_fastq_dir = os.path.join(config['fastq_by_run_dir'], run_id)
     is_sample = lambda x: not(x.startswith('Undetermined'))
     if os.path.exists(run_fastq_dir):
         run_fastq_filenames = list(map(lambda x: os.path.basename(x), glob.glob(os.path.join(run_fastq_dir, '*.fastq.gz'))))
         sample_fastq_filenames = list(filter(lambda x: is_sample(x), run_fastq_filenames))
-        sample_library_ids = list(map(lambda x: x.split('_')[0], sample_fastq_filenames))
+        for fastq_filename in sample_fastq_filenames:
+            library_id = fastq_filename.split('_')[0]
+            sample_library_ids.add(library_id)
+
+    sample_library_ids = list(sample_library_ids)
                                   
     return sample_library_ids
 
