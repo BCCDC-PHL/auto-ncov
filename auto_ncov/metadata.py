@@ -85,21 +85,48 @@ def get_run_library_ids(config, run_id):
         run_fastq_filenames = list(map(lambda x: os.path.basename(x), glob.glob(os.path.join(run_fastq_dir, '*.fastq.gz'))))
         sample_fastq_filenames = list(filter(lambda x: is_sample(x), run_fastq_filenames))
         sample_library_ids = list(map(lambda x: x.split('_')[0], sample_fastq_filenames))
-        
-        print(json.dumps(sample_library_ids, indent=2))
-        exit()
                                   
     return sample_library_ids
-        
+
+def select_run_metadata(all_metadata, run_library_ids):
+    run_metadata = []
+    for library_id in run_library_ids:
+        library_selected_metadata = {
+            'sample': library_id,
+            'ct': None,
+            'date': None,
+        }
+        if not(library_id.startswith('POS') or library_id.startswith('NEG')):
+            library_id_split = library_id.split('-')
+            if len(library_id_split) > 0:
+                container_id = library_id_split[0]
+                try:
+                    library_metadata = all_metadata[container_id]
+                    library_selected_metadata = {
+                        'sample': library_id,
+                        'ct': library_metadata['ct_combo'],
+                        'date': library_metadata['collection_date']
+                    }            
+                except KeyError as e:
+                    pass
+
+        run_metadata.append(library_selected_metadata)
+
+    return run_metadata
+    
 
 def main(args):
     today = date.today().strftime('%Y-%m-%d')
     config = auto_ncov.config.load_config(args.config)
-    metadata = load_metadata(config)
-    metadata = combine_ct_values(metadata)
-    get_run_library_ids(config, args.run_id)
-    print(json.dumps(list(metadata.values()), indent=2))
-    
+    all_metadata = load_metadata(config)
+    all_metadata_with_ct_combo = combine_ct_values(all_metadata)
+    run_library_ids = get_run_library_ids(config, args.run_id)
+    run_metadata = select_run_metadata(all_metadata_with_ct_combo, run_library_ids)
+    print(json.dumps(run_metadata[0:5], indent=2))
+
+                
+            
+        
     
 
 if __name__ == '__main__':
