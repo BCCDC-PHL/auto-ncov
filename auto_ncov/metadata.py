@@ -122,7 +122,7 @@ def collect_run_metadata(config, run_id):
     """
     all_metadata = load_metadata(config)
     all_metadata_with_ct_combo = combine_ct_values(all_metadata)
-    run_library_ids = get_run_library_ids(config, args.run_id)
+    run_library_ids = get_run_library_ids(config, run_id)
     run_metadata = select_run_metadata(all_metadata_with_ct_combo, run_library_ids)
 
     return run_metadata
