@@ -182,9 +182,13 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
                 if len(run_metadata) > 0:
                     try:
                         with open(analysis_run_metadata_path, 'w') as f:
+                            output_fieldnames = ['sample', 'ct', 'date']
                             writer = csv.DictWriter(f, fieldnames=['sample', 'ct', 'date'], dialect='excel-tab')
                             writer.writeheader()
                             for row in run_metadata:
+                                for field in output_fieldnames[1:]:
+                                    if row[field] is None:
+                                        row[field] = "NA"
                                 writer.writerow(row)
                         logging.info(json.dumps({"event_type": "wrote_metadata_file", "run_id": run_id, "metadata_file": os.path.abspath(analysis_run_metadata_path)}))
                     except Exception as e: # TODO: Narrow the type of exceptions we catch here
