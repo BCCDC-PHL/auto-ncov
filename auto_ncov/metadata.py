@@ -67,7 +67,7 @@ def combine_ct_values(metadata):
         ct_combo = None
         for ct_field in ct_fields_by_preference:
             if sample_metadata[ct_field] is not None:
-                ct_combo = sample_metadata['ncov_qpcr_e_sarbeco_result']
+                ct_combo = sample_metadata[ct_field]
                 break
 
         sample_metadata['ct_combo'] = ct_combo
