@@ -3,10 +3,11 @@ import csv
 import glob
 import json
 import os
-
-import auto_ncov.config
+import sys
 
 from datetime import date
+
+import auto_ncov.config
 
 
 def load_metadata(config):
@@ -113,17 +114,36 @@ def select_run_metadata(all_metadata, run_library_ids):
         run_metadata.append(library_selected_metadata)
 
     return run_metadata
-    
 
-def main(args):
-    today = date.today().strftime('%Y-%m-%d')
-    config = auto_ncov.config.load_config(args.config)
+
+def collect_run_metadata(config, run_id):
+    """
+    """
     all_metadata = load_metadata(config)
     all_metadata_with_ct_combo = combine_ct_values(all_metadata)
     run_library_ids = get_run_library_ids(config, args.run_id)
     run_metadata = select_run_metadata(all_metadata_with_ct_combo, run_library_ids)
-    print(json.dumps(run_metadata[0:5], indent=2))
 
+    return run_metadata
+
+
+def main(args):
+
+    config = auto_ncov.config.load_config(args.config)
+    run_metadata = collect_run_metadata(config, args.run_id)
+    output_fieldnames = [
+        'sample',
+        'ct',
+        'date',
+    ]
+
+    writer = csv.DictWriter(sys.stdout, fieldnames=output_fieldnames, dialect='excel-tab')
+    writer.writeheader()
+    for row in run_metadata:
+        for field in output_fieldnames:
+            if row[field] is None:
+                row[field] = "NA"
+        writer.writerow(row)
                 
             
         
