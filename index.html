@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BCCDC-PHL auto-ncov &mdash; BCCDC-PHL auto-ncov  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> BCCDC-PHL auto-ncov
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">BCCDC-PHL auto-ncov</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#auto-ncov-core">auto_ncov.core</a><ul>
+<li><a class="reference internal" href="#auto_ncov.core.analyze_run"><code class="docutils literal notranslate"><span class="pre">analyze_run()</span></code></a></li>
+<li><a class="reference internal" href="#auto_ncov.core.check_analysis_dependencies_complete"><code class="docutils literal notranslate"><span class="pre">check_analysis_dependencies_complete()</span></code></a></li>
+<li><a class="reference internal" href="#auto_ncov.core.find_fastq_dirs"><code class="docutils literal notranslate"><span class="pre">find_fastq_dirs()</span></code></a></li>
+<li><a class="reference internal" href="#auto_ncov.core.scan"><code class="docutils literal notranslate"><span class="pre">scan()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#auto-ncov-config">auto_ncov.config</a><ul>
+<li><a class="reference internal" href="#auto_ncov.config.load_config"><code class="docutils literal notranslate"><span class="pre">load_config()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#auto-ncov-metadata">auto_ncov.metadata</a><ul>
+<li><a class="reference internal" href="#auto_ncov.metadata.collect_run_metadata"><code class="docutils literal notranslate"><span class="pre">collect_run_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#auto_ncov.metadata.combine_ct_values"><code class="docutils literal notranslate"><span class="pre">combine_ct_values()</span></code></a></li>
+<li><a class="reference internal" href="#auto_ncov.metadata.get_run_library_ids"><code class="docutils literal notranslate"><span class="pre">get_run_library_ids()</span></code></a></li>
+<li><a class="reference internal" href="#auto_ncov.metadata.load_metadata"><code class="docutils literal notranslate"><span class="pre">load_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#auto_ncov.metadata.select_run_metadata"><code class="docutils literal notranslate"><span class="pre">select_run_metadata()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">BCCDC-PHL auto-ncov</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">BCCDC-PHL auto-ncov</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bccdc-phl-auto-ncov">
+<h1>BCCDC-PHL auto-ncov<a class="headerlink" href="#bccdc-phl-auto-ncov" title="Permalink to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+<section id="auto-ncov-core">
+<h1>auto_ncov.core<a class="headerlink" href="#auto-ncov-core" title="Permalink to this heading"></a></h1>
+<p>This module includes the core functionality for finding input datasets and running analyses.</p>
+<span class="target" id="module-auto_ncov.core"></span><dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.core.analyze_run">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.core.</span></span><span class="sig-name descname"><span class="pre">analyze_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#auto_ncov.core.analyze_run" title="Permalink to this definition"></a></dt>
+<dd><p>Initiate an analysis on one directory of fastq files. We assume that the directory of fastq files is named using
+a sequencing run ID.</p>
+<p>Runs the pipeline as defined in the config, with parameters configured for the run to be analyzed. Skips any
+analyses that have already been initiated (whether completed or not).</p>
+<p>Some pipelines may specify that they depend on the outputs of another through their ‘dependencies’ config.
+For those pipelines, we confirm that all of the upstream analyses that we depend on are complete, or the analysis will be skipped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – Application config. Required keys: <cite>[“analysis_output_dir”, “analysis_work_dir”, “pipelines”]</cite>. Optional keys: <cite>[“send_notification_emails”, “notification_email_addresses”]</cite></p></li>
+<li><p><strong>run</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – Sequencing run to analyze. Required keys: <cite>[“run_id”, “fastq_directory”, “analysis_parameters”]</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NoneType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.core.check_analysis_dependencies_complete">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.core.</span></span><span class="sig-name descname"><span class="pre">check_analysis_dependencies_complete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_run_output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#auto_ncov.core.check_analysis_dependencies_complete" title="Permalink to this definition"></a></dt>
+<dd><p>Check that all of the entries in the pipeline’s <cite>dependencies</cite> config have completed. If so, return True. Return False otherwise.</p>
+<p>Pipeline completion is determined by the presence of an <cite>analysis_complete.json</cite> file in the analysis output directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pipeline</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – </p></li>
+<li><p><strong>analysis</strong> (<em>dictp</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – </p></li>
+<li><p><strong>analysis_run_output_dir</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether or not all of the pipelines listed in <cite>dependencies</cite> have completed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.core.find_fastq_dirs">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.core.</span></span><span class="sig-name descname"><span class="pre">find_fastq_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_symlinks_complete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.core.find_fastq_dirs" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over contents of <cite>fastq_by_run_dir</cite> from config. Identify directories that
+match the illumina run ID format. If <cite>check_symlinks_complete</cite> is True, then check
+that a <cite>symlinks_complete.json</cite> file exists in the directory. Also consult the list
+of excluded runs, and exclude any directory whose name appears on that list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – Application config. Required keys: <cite>[“fastq_by_run_dir”, “excluded_runs”]</cite>. Optional keys: <cite>[“analyze_runs_in_reverse_order”]</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A run directory to analyze, or None. If not None, keys are: <cite>[“run_id”, “fastq_directory”, “analysis_parameters”]</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Iterator[Optional[dict[str, object]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.core.scan">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.core.</span></span><span class="sig-name descname"><span class="pre">scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.core.scan" title="Permalink to this definition"></a></dt>
+<dd><p>Scanning involves looking for all existing runs, and passing them along to be analyzed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – Application config.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A run directory to analyze, or None. If not None, keys are: <cite>[“run_id”, “fastq_directory”, “analysis_parameters”]</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Iterator[Optional[dict[str, object]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="auto-ncov-config">
+<h1>auto_ncov.config<a class="headerlink" href="#auto-ncov-config" title="Permalink to this heading"></a></h1>
+<p>This module defines the entities to be stored in the database, and their
+relationships with one another.</p>
+<span class="target" id="module-auto_ncov.config"></span><dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.config.load_config">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.config.</span></span><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.config.load_config" title="Permalink to this definition"></a></dt>
+<dd><p>Load the application config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_path</strong> (<em>str</em>) – Path to config file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary containing configuration data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[str, object]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="auto-ncov-metadata">
+<h1>auto_ncov.metadata<a class="headerlink" href="#auto-ncov-metadata" title="Permalink to this heading"></a></h1>
+<p>This module includes methods used to collect metadata necessary for running ncov-tools.</p>
+<span class="target" id="module-auto_ncov.metadata"></span><dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.metadata.collect_run_metadata">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.metadata.</span></span><span class="sig-name descname"><span class="pre">collect_run_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.metadata.collect_run_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Collect the metadata needed by ncov-tools (Ct score, collection date) for a specific run.
+Metadata is collected from a pre-generated .csv file that includes metadata for all libraries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – Application config. Required keys: <cite>[“fastq_by_run_dir”, “metadata_file”]</cite>.</p></li>
+<li><p><strong>run_id</strong> (<em>str</em>) – The identifier for the run whose metadata is to be collected.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of dictionaries representing metadata for the libraries on the current run. Keys: <cite>[“sample”, “ct”, “date”]</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.metadata.combine_ct_values">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.metadata.</span></span><span class="sig-name descname"><span class="pre">combine_ct_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.metadata.combine_ct_values" title="Permalink to this definition"></a></dt>
+<dd><p>Take the available ct values and select one based on a pre-defined order of preference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metadata</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – Dictionary of all available metadata, indexed by container ID.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same metadata that is passed as input, with an additional <cite>ct_combo</cite> field on each metadata entry.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[str, dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.metadata.get_run_library_ids">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.metadata.</span></span><span class="sig-name descname"><span class="pre">get_run_library_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.metadata.get_run_library_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over fastq files in a directory. Identify all library IDs for the fastq files in the run. If an <cite>Undetermined</cite> fastq file is present, exclude it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – Application config. Required keys: <cite>[“fastq_by_run_dir”]</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of library IDs for the run.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.metadata.load_metadata">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.metadata.</span></span><span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.metadata.load_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Load metadata from a pre-populated metadata csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – Application config. Required keys: <cite>[“metadata_file”]</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>All available metadata, indexed by container ID</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[str, dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_ncov.metadata.select_run_metadata">
+<span class="sig-prename descclassname"><span class="pre">auto_ncov.metadata.</span></span><span class="sig-name descname"><span class="pre">select_run_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_library_ids</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#auto_ncov.metadata.select_run_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Given all available metadata and a list of library IDs for the current run, select only the metadata for the current run.
+Any library ID starting with <cite>POS</cite> or <cite>NEG</cite> will have null metadata (represented with <cite>NA</cite>), as these represent positive and negative controls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>all_metadata</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – Dictionary, where keys are container ID and values are dictionary with keys: <cite>[“ct_combo”, “collection_date”]</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of dictionaries representing metadata for the libraries on the current run. Keys: <cite>[“sample”, “ct”, “date”]</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, BC Centre for Disease Control Public Health Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
