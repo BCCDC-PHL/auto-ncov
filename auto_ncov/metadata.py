@@ -10,8 +10,14 @@ from datetime import date
 import auto_ncov.config
 
 
-def load_metadata(config):
+def load_metadata(config: dict[str, object]) -> dict[str, dict[str, object]]:
     """
+    Load metadata from a pre-populated metadata csv file.
+
+    :param config: Application config. Required keys: `["metadata_file"]`.
+    :type config: dict[str, object]
+    :return: All available metadata, indexed by container ID
+    :rtype: dict[str, dict[str, object]]
     """
     metadata = {}
 
@@ -53,8 +59,14 @@ def load_metadata(config):
     return metadata
 
 
-def combine_ct_values(metadata):
+def combine_ct_values(metadata: dict[str, dict[str, object]]) -> dict[str, dict[str, object]]:
     """
+    Take the available ct values and select one based on a pre-defined order of preference.
+
+    :param metadata: Dictionary of all available metadata, indexed by container ID.
+    :type metadata: dict[str, dict[str, object]]
+    :return: The same metadata that is passed as input, with an additional `ct_combo` field on each metadata entry.
+    :rtype: dict[str, dict[str, object]]
     """
     ct_fields_by_preference = [
         'ncov_qpcr_e_sarbeco_result',
@@ -76,8 +88,14 @@ def combine_ct_values(metadata):
     return metadata
 
 
-def get_run_library_ids(config, run_id):
+def get_run_library_ids(config: dict[str, object], run_id: str) -> list[str]:
     """
+    Iterate over fastq files in a directory. Identify all library IDs for the fastq files in the run. If an `Undetermined` fastq file is present, exclude it.
+    
+    :param config: Application config. Required keys: `["fastq_by_run_dir"]`.
+    :type config: dict[str, object]
+    :return: A list of library IDs for the run.
+    :rtype: list[str]
     """
     sample_library_ids = set()
     run_fastq_dir = os.path.join(config['fastq_by_run_dir'], run_id)
@@ -94,7 +112,16 @@ def get_run_library_ids(config, run_id):
     return sample_library_ids
 
 
-def select_run_metadata(all_metadata, run_library_ids):
+def select_run_metadata(all_metadata: dict[str, dict[str, object]], run_library_ids) -> list[dict[str, object]]:
+    """
+    Given all available metadata and a list of library IDs for the current run, select only the metadata for the current run.
+    Any library ID starting with `POS` or `NEG` will have null metadata (represented with `NA`), as these represent positive and negative controls.
+    
+    :param all_metadata: Dictionary, where keys are container ID and values are dictionary with keys: `["ct_combo", "collection_date"]`
+    :type all_metadata: dict[str, dict[str, object]]
+    :return: A list of dictionaries representing metadata for the libraries on the current run. Keys: `["sample", "ct", "date"]`
+    :rtype: list[dict[str, object]]
+    """
     run_metadata = []
     for library_id in run_library_ids:
         library_selected_metadata = {
@@ -121,8 +148,17 @@ def select_run_metadata(all_metadata, run_library_ids):
     return run_metadata
 
 
-def collect_run_metadata(config, run_id):
+def collect_run_metadata(config: dict[str, object], run_id: str) -> list[dict[str, object]]:
     """
+    Collect the metadata needed by ncov-tools (Ct score, collection date) for a specific run.
+    Metadata is collected from a pre-generated .csv file that includes metadata for all libraries.
+
+    :param config: Application config. Required keys: `["fastq_by_run_dir", "metadata_file"]`.
+    :type config: dict[str, object]
+    :param run_id: The identifier for the run whose metadata is to be collected.
+    :type run_id: str
+    :return: A list of dictionaries representing metadata for the libraries on the current run. Keys: `["sample", "ct", "date"]`
+    :rtype: list[dict[str, object]]
     """
     all_metadata = load_metadata(config)
     all_metadata_with_ct_combo = combine_ct_values(all_metadata)
@@ -149,10 +185,7 @@ def main(args):
             if row[field] is None:
                 row[field] = "NA"
         writer.writerow(row)
-                
-            
-        
-    
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

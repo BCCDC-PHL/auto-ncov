@@ -14,7 +14,18 @@ from typing import Iterator, Optional
 import auto_ncov.metadata as metadata
 
 
-def find_fastq_dirs(config, check_symlinks_complete=True):
+def find_fastq_dirs(config, check_symlinks_complete=True) -> Iterator[Optional[dict[str, object]]]:
+    """
+    Iterate over contents of `fastq_by_run_dir` from config. Identify directories that
+    match the illumina run ID format. If `check_symlinks_complete` is True, then check
+    that a `symlinks_complete.json` file exists in the directory. Also consult the list
+    of excluded runs, and exclude any directory whose name appears on that list.
+
+    :param config: Application config. Required keys: `["fastq_by_run_dir", "excluded_runs"]`. Optional keys: `["analyze_runs_in_reverse_order"]`
+    :type config: dict[str, object]
+    :return: A run directory to analyze, or None. If not None, keys are: `["run_id", "fastq_directory", "analysis_parameters"]`
+    :rtype: Iterator[Optional[dict[str, object]]]
+    """
     miseq_run_id_regex = "\d{6}_M\d{5}_\d+_\d{9}-[A-Z0-9]{5}"
     nextseq_run_id_regex = "\d{6}_VH\d{5}_\d+_[A-Z0-9]{9}"
 
@@ -67,7 +78,7 @@ def scan(config: dict[str, object]) -> Iterator[Optional[dict[str, object]]]:
 
     :param config: Application config.
     :type config: dict[str, object]
-    :return: A run directory to analyze, or None
+    :return: A run directory to analyze, or None. If not None, keys are: `["run_id", "fastq_directory", "analysis_parameters"]`
     :rtype: Iterator[Optional[dict[str, object]]]
     """
     logging.info(json.dumps({"event_type": "scan_start"}))
@@ -75,7 +86,7 @@ def scan(config: dict[str, object]) -> Iterator[Optional[dict[str, object]]]:
         yield fastq_dir
 
 
-def check_analysis_dependencies_complete(pipeline: dict[str, object], analysis: dict[str, object], analysis_run_output_dir: str):
+def check_analysis_dependencies_complete(pipeline: dict[str, object], analysis: dict[str, object], analysis_run_output_dir: str) -> bool:
     """
     Check that all of the entries in the pipeline's `dependencies` config have completed. If so, return True. Return False otherwise.
 
@@ -117,7 +128,7 @@ def check_analysis_dependencies_complete(pipeline: dict[str, object], analysis: 
     return all_dependencies_complete
 
 
-def analyze_run(config: dict[str, object], run: dict[str, object]):
+def analyze_run(config: dict[str, object], run: dict[str, object]) -> None:
     """
     Initiate an analysis on one directory of fastq files. We assume that the directory of fastq files is named using
     a sequencing run ID.
@@ -128,10 +139,10 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
     Some pipelines may specify that they depend on the outputs of another through their 'dependencies' config.
     For those pipelines, we confirm that all of the upstream analyses that we depend on are complete, or the analysis will be skipped.
 
-    :param config:
+    :param config: Application config. Required keys: `["analysis_output_dir", "analysis_work_dir", "pipelines"]`. Optional keys: `["send_notification_emails", "notification_email_addresses"]`
     :type config: dict[str, object]
-    :param analysis:
-    :type analysis: dict[str, object]
+    :param run: Sequencing run to analyze. Required keys: `["run_id", "fastq_directory", "analysis_parameters"]`
+    :type run: dict[str, object]
     :return: None
     :rtype: NoneType
     """
