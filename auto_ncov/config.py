@@ -2,6 +2,14 @@ import json
 import os
 
 def load_config(config_path: str) -> dict[str, object]:
+    """
+    Load the application config file.
+
+    :param config_path: Path to config file.
+    :type config_path: str
+    :return: A dictionary containing configuration data.
+    :rtype: dict[str, object]
+    """
     config = {}
     with open(config_path, 'r') as f:
         config = json.load(f)
