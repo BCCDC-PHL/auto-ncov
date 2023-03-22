@@ -1,3 +1,4 @@
+import csv
 import datetime
 import glob
 import json
@@ -9,6 +10,8 @@ import subprocess
 import uuid
 
 from typing import Iterator, Optional
+
+import auto_ncov.metadata as metadata
 
 
 def find_fastq_dirs(config, check_symlinks_complete=True):
@@ -175,9 +178,25 @@ def analyze_run(config: dict[str, object], run: dict[str, object]):
             # remove the metadata flag, to avoid mutating the list of
             # parameters while iterating over it.
             if not os.path.exists(analysis_run_metadata_path):
-                for parameter in pipeline_parameters:
-                    if parameter['flag'] == '--metadata':
-                        pipeline_parameters.remove(parameter)
+                run_metadata = metadata.collect_run_metadata(config, run_id)
+                if len(run_metadata) > 0:
+                    try:
+                        with open(analysis_run_metadata_path, 'w') as f:
+                            output_fieldnames = ['sample', 'ct', 'date']
+                            writer = csv.DictWriter(f, fieldnames=['sample', 'ct', 'date'], dialect='excel-tab')
+                            writer.writeheader()
+                            for row in run_metadata:
+                                for field in output_fieldnames[1:]:
+                                    if row[field] is None:
+                                        row[field] = "NA"
+                                writer.writerow(row)
+                        logging.info(json.dumps({"event_type": "wrote_metadata_file", "run_id": run_id, "metadata_file": os.path.abspath(analysis_run_metadata_path)}))
+                    except Exception as e: # TODO: Narrow the type of exceptions we catch here
+                        # If we can't write a metadata file for the run then
+                        # we should exclude the '--metadata' flag from the analysis command-line
+                        for parameter in pipeline_parameters:
+                            if parameter['flag'] == '--metadata':
+                                pipeline_parameters.remove(parameter)
 
             for parameter in pipeline_parameters:
                 if parameter['flag'] == '--artic_analysis_dir':
