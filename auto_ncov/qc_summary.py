@@ -7,7 +7,7 @@ import sys
 import auto_ncov.config
 
 
-def parse_ncov_tools_summary_qc(ncov_tools_summary_qc_path: str) -> list[dict[str, str]]:
+def parse_artic_qc(artic_qc_path: str) -> list[dict[str, str]]:
     """
     Parse an ncov-tools summary_qc file.
     
@@ -16,14 +16,37 @@ def parse_ncov_tools_summary_qc(ncov_tools_summary_qc_path: str) -> list[dict[st
     :return: Parsed ncov-tools summary_qc data
     :rtype: list[dict[str, str]]
     """
-    summary_qc = []
-    sample_count = 1
+    artic_qc = []
+    unwanted_fields = [
+        'fasta',
+        'bam',
+        'qc_pass',
+    ]
+    with open(artic_qc_path) as f:
+        reader = csv.DictReader(f, dialect='unix')
+        for row in reader:
+            for field in unwanted_fields:
+                row.pop(field)
+            artic_qc.append(row)
+
+    return artic_qc
+
+
+def parse_ncov_tools_summary_qc(ncov_tools_summary_qc_path: str) -> dict[str, dict[str, str]]:
+    """
+    Parse an ncov-tools summary_qc file.
+    
+    :param ncov_tools_summary_qc_path: Path to ncov-tools summary_qc file.
+    :type ncovo_tools_summary_qc_path: str
+    :return: Parsed ncov-tools summary_qc data
+    :rtype: dict[str, dict[str, str]]
+    """
+    summary_qc = {}
     with open(ncov_tools_summary_qc_path) as f:
         reader = csv.DictReader(f, dialect='excel-tab')
         for row in reader:
-            row[""] = sample_count
-            summary_qc.append(row)
-            sample_count += 1
+            sample_id = row['sample']
+            summary_qc[sample_id] = row
 
     return summary_qc
 
@@ -63,20 +86,48 @@ def parse_pangolin_lineages(pangolin_lineages_path):
     return pangolin_lineages_by_sample_id
 
 
-def join_pangolin_lineages_to_summary_qc(summary_qc, pangolin_lineages_by_sample_id) -> list[dict[str, object]]:
+def qc_check(sample: dict):
+    """
+    """
+    failure_conditions = {
+        'excess_ambiguity': lambda x: 'EXCESS_AMBIGUITY' in x['qc_pass'],
+        'low_genome_completeness': lambda x: float(x['pct_covered_bases']) < 85.0,
+    }
+    failure_check_results = {}
+    for condition_name, test in failure_conditions.items():
+        failure_check_results[condition_name] = test(sample)
+
+    qc_fail = int(not any(failure_check_results.values()))
+
+    return qc_fail
+
+
+def join_ncov_tools_summary_qc_to_artic_qc(artic_qc, ncov_tools_summary_qc):
+    """
+    """
+    for artic_qc_record in artic_qc:
+        sample_id = artic_qc_record['sample_name']
+        sample_ncov_tools_summary_qc_record = ncov_tools_summary_qc[sample_id]
+        for k in sample_ncov_tools_summary_qc_record.keys():
+            artic_qc_record[k] = sample_ncov_tools_summary_qc_record[k]
+
+    return artic_qc
+
+
+def join_pangolin_lineages_to_merged_qc_summary(summary_qc, pangolin_lineages_by_sample_id) -> list[dict[str, object]]:
     """
     """
     for summary_qc_record in summary_qc:
         sample_id = summary_qc_record["sample"]
+        summary_qc_record['qc_pass_y'] = qc_check(summary_qc_record)
+
         if sample_id in pangolin_lineages_by_sample_id:
             sample_pangolin_lineages = pangolin_lineages_by_sample_id[sample_id]
 
-        # 
         summary_qc_record['lineage_x'] = summary_qc_record['lineage']
         summary_qc_record.pop('lineage')
         summary_qc_record['qc_pass_x'] = summary_qc_record['qc_pass']
         summary_qc_record.pop('qc_pass')
-
         summary_qc_record.pop('lineage_notes')
         summary_qc_record.pop('scorpio_call')
         
@@ -86,6 +137,22 @@ def join_pangolin_lineages_to_summary_qc(summary_qc, pangolin_lineages_by_sample
 
 def main(args):
     config = auto_ncov.config.load_config(args.config)
+
+    artic_qc_path = os.path.join(
+        config['analysis_output_dir'],
+        args.run_id,
+        "ncov2019-artic-nf-v1.3-output",
+        args.run_id + '.qc.csv'
+    )
+
+    if os.path.exists(artic_qc_path):
+        artic_qc = parse_artic_qc(artic_qc_path)
+        # print(json.dumps(artic_qc[0:2], indent=2))
+        # exit()
+    else:
+        print("File does not exist:", artic_qc_path)
+        exit(-1)
+    
     ncov_tools_summary_qc_path = os.path.join(
         config['analysis_output_dir'],
         args.run_id,
@@ -96,7 +163,7 @@ def main(args):
     )
 
     if os.path.exists(ncov_tools_summary_qc_path):
-        ncov_tools_summary_qc = parse_ncov_tools_summary_qc(ncov_tools_summary_qc_path)
+        ncov_tools_summary_qc_by_sample_id = parse_ncov_tools_summary_qc(ncov_tools_summary_qc_path)
         # print(json.dumps(ncov_tools_summary_qc[0:2], indent=2))
     else:
         print("File does not exist:", ncov_tools_summary_qc_path)
@@ -117,7 +184,8 @@ def main(args):
         print("File does not exist:", pangolin_lineages_path)
         exit(-1)
 
-    merged_qc_summary = join_pangolin_lineages_to_summary_qc(ncov_tools_summary_qc, pangolin_lineages_by_sample_id)
+    merged_qc_summary = join_ncov_tools_summary_qc_to_artic_qc(artic_qc, ncov_tools_summary_qc_by_sample_id)
+    merged_qc_summary = join_pangolin_lineages_to_merged_qc_summary(merged_qc_summary, pangolin_lineages_by_sample_id)
 
     output_fieldnames = [
         "",
@@ -156,7 +224,11 @@ def main(args):
     writer = csv.DictWriter(sys.stdout, fieldnames=output_fieldnames, dialect='unix', quoting=csv.QUOTE_MINIMAL)
     writer.writeheader()
     for row in merged_qc_summary:
-        writer.writerow(row)
+        try:
+            writer.writerow(row)
+        except BrokenPipeError as e:
+            exit()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
