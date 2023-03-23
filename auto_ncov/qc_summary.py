@@ -2,6 +2,7 @@ import argparse
 import csv
 import json
 import os
+import sys
 
 import auto_ncov.config
 
@@ -62,16 +63,25 @@ def parse_pangolin_lineages(pangolin_lineages_path):
     return pangolin_lineages_by_sample_id
 
 
-def join_pangolin_lineages_to_summary_qc(summary_qc, pangolin_lineages):
+def join_pangolin_lineages_to_summary_qc(summary_qc, pangolin_lineages_by_sample_id) -> list[dict[str, object]]:
     """
     """
     for summary_qc_record in summary_qc:
         sample_id = summary_qc_record["sample"]
-        sample_pangolin_lineages = pangolin_lineages[sample_id]
+        if sample_id in pangolin_lineages_by_sample_id:
+            sample_pangolin_lineages = pangolin_lineages_by_sample_id[sample_id]
+
+        # 
         summary_qc_record['lineage_x'] = summary_qc_record['lineage']
         summary_qc_record.pop('lineage')
+        summary_qc_record['qc_pass_x'] = summary_qc_record['qc_pass']
+        summary_qc_record.pop('qc_pass')
+
+        summary_qc_record.pop('lineage_notes')
+        summary_qc_record.pop('scorpio_call')
         
-        summary_qc_record['pangoLEARN_version'] = sample_pangolin_lineages['pangoLEARN_version']
+
+    return summary_qc
     
 
 def main(args):
@@ -87,7 +97,10 @@ def main(args):
 
     if os.path.exists(ncov_tools_summary_qc_path):
         ncov_tools_summary_qc = parse_ncov_tools_summary_qc(ncov_tools_summary_qc_path)
-        print(json.dumps(ncov_tools_summary_qc[0:2], indent=2))
+        # print(json.dumps(ncov_tools_summary_qc[0:2], indent=2))
+    else:
+        print("File does not exist:", ncov_tools_summary_qc_path)
+        exit(-1)
 
     pangolin_lineages_path = os.path.join(
         config['analysis_output_dir'],
@@ -99,7 +112,12 @@ def main(args):
 
     if os.path.exists(pangolin_lineages_path):
         pangolin_lineages_by_sample_id = parse_pangolin_lineages(pangolin_lineages_path)
-        print(json.dumps(list(pangolin_lineages_by_sample_id.values())[0:2], indent=2))
+        # print(json.dumps(list(pangolin_lineages_by_sample_id.values())[0:2], indent=2))
+    else:
+        print("File does not exist:", pangolin_lineages_path)
+        exit(-1)
+
+    merged_qc_summary = join_pangolin_lineages_to_summary_qc(ncov_tools_summary_qc, pangolin_lineages_by_sample_id)
 
     output_fieldnames = [
         "",
@@ -134,6 +152,11 @@ def main(args):
         "qc_pass_y",
         "sample_name",
     ]
+
+    writer = csv.DictWriter(sys.stdout, fieldnames=output_fieldnames, dialect='unix', quoting=csv.QUOTE_MINIMAL)
+    writer.writeheader()
+    for row in merged_qc_summary:
+        writer.writerow(row)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
