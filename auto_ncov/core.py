@@ -102,9 +102,13 @@ def check_analysis_dependencies_complete(pipeline: dict[str, object], analysis: 
     :rtype: bool
     """
     all_dependencies_complete = False
+    if 'dependencies' not in pipeline:
+        return True
+
     dependencies = pipeline['dependencies']
     if dependencies is None:
         return True
+
     dependencies_complete = []
     dependency_infos = []
     for dependency in dependencies:
