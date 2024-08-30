@@ -83,10 +83,7 @@ def combine_ct_values(metadata: dict[str, dict[str, object]]) -> dict[str, dict[
                 ct_combo = sample_metadata[ct_field]
                 break
         
-        if containerid.startswith("POS"):
-            sample_metadata['ct_combo'] = 0
-        else:
-            sample_metadata['ct_combo'] = ct_combo
+        sample_metadata['ct_combo'] = ct_combo
 
     return metadata
 
@@ -146,6 +143,10 @@ def select_run_metadata(all_metadata: dict[str, dict[str, object]], run_library_
                 except KeyError as e:
                     pass
 
+        
+        if library_id.startswith('POS'):
+            library_selected_metadata['ct'] = 0
+            
         run_metadata.append(library_selected_metadata)
 
     return run_metadata
