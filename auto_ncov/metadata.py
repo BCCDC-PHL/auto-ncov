@@ -83,7 +83,7 @@ def combine_ct_values(metadata: dict[str, dict[str, object]]) -> dict[str, dict[
                 ct_combo = sample_metadata[ct_field]
                 break
         
-        if sample_metadata[containerid].startswith("POS"):
+        if containerid.startswith("POS"):
             sample_metadata['ct_combo'] = 0
         else:
             sample_metadata['ct_combo'] = ct_combo
