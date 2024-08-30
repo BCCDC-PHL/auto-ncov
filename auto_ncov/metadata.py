@@ -82,6 +82,7 @@ def combine_ct_values(metadata: dict[str, dict[str, object]]) -> dict[str, dict[
             if sample_metadata[ct_field] is not None:
                 ct_combo = sample_metadata[ct_field]
                 break
+                
         sample_metadata['ct_combo'] = ct_combo
 
     return metadata
