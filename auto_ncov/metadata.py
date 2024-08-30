@@ -82,7 +82,6 @@ def combine_ct_values(metadata: dict[str, dict[str, object]]) -> dict[str, dict[
             if sample_metadata[ct_field] is not None:
                 ct_combo = sample_metadata[ct_field]
                 break
-        
         sample_metadata['ct_combo'] = ct_combo
 
     return metadata
@@ -143,7 +142,6 @@ def select_run_metadata(all_metadata: dict[str, dict[str, object]], run_library_
                 except KeyError as e:
                     pass
 
-        
         if library_id.startswith('POS'):
             library_selected_metadata['ct'] = 0
             
